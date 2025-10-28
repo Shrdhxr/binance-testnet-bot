@@ -17,8 +17,8 @@ A production-ready Python trading bot for Binance Futures Testnet that supports 
 ## Project Structure
 
 ```
-trading_bot/
-├── bot.py                 # Main CLI entry point
+binance-testnet-bot/
+├── bot.py                # Main CLI entry point
 ├── basic_bot.py          # BasicBot class for API interaction
 ├── config.py             # Configuration and constants
 ├── utils.py              # Utility functions and validation
@@ -27,7 +27,7 @@ trading_bot/
 ├── logs/
 │   └── bot.log           # Application logs
 ├── requirements.txt      # Python dependencies
-├── .env.example          # Example environment variables
+├── .env                  # Environment variables
 └── README.md             # This file
 ```
 
