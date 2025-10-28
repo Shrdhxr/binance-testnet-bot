@@ -4,7 +4,8 @@ Handles API connection and order placement.
 """
 
 import logging
-from binance.um_futures import UMFutures
+import time
+from binance.client import Client
 from binance.exceptions import BinanceAPIException, BinanceRequestException
 from config import (
     BINANCE_TESTNET_BASE_URL,
@@ -24,15 +25,32 @@ class BasicBot:
     def __init__(self):
         """Initialize the bot with Binance Futures client."""
         try:
-            self.client = UMFutures(
-                key=BINANCE_API_KEY,
-                secret=BINANCE_API_SECRET,
-                base_url=BINANCE_TESTNET_BASE_URL,
+            self.client = Client(
+                api_key=BINANCE_API_KEY,
+                api_secret=BINANCE_API_SECRET,
+                testnet=True,  # Use testnet
             )
+            self.time_offset = 0
+            self._sync_time()
             logger.info("Binance Futures client initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize Binance client: {str(e)}")
             raise
+    
+    def _sync_time(self):
+        """Sync client time with Binance server to prevent timestamp errors."""
+        try:
+            server_time = self.client.get_server_time()
+            local_time = int(time.time() * 1000)
+            self.time_offset = server_time['serverTime'] - local_time
+            logger.info(f"Time synced with Binance server (offset: {self.time_offset}ms)")
+        except Exception as e:
+            logger.warning(f"Failed to sync time with Binance: {str(e)}")
+            self.time_offset = 0
+    
+    def _get_timestamp(self):
+        """Get current timestamp adjusted for server time offset."""
+        return int(time.time() * 1000) + self.time_offset
     
     def place_market_order(self, symbol: str, side: str, quantity: float) -> dict:
         """
@@ -51,13 +69,16 @@ class BasicBot:
             BinanceRequestException: If request fails
         """
         try:
+            self._sync_time()
             logger.info(f"Placing MARKET order: {side} {quantity} {symbol}")
             
-            order = self.client.new_order(
+            order = self.client.futures_create_order(
                 symbol=symbol,
                 side=side,
                 type="MARKET",
                 quantity=quantity,
+                timestamp=self._get_timestamp(),
+                recvWindow=60000,  # Increased to 60 second window
             )
             
             logger.info(f"MARKET order placed successfully: {order}")
@@ -93,15 +114,18 @@ class BasicBot:
             BinanceRequestException: If request fails
         """
         try:
+            self._sync_time()
             logger.info(f"Placing LIMIT order: {side} {quantity} {symbol} @ {price}")
             
-            order = self.client.new_order(
+            order = self.client.futures_create_order(
                 symbol=symbol,
                 side=side,
                 type="LIMIT",
                 timeInForce="GTC",  # Good Till Cancel
                 quantity=quantity,
                 price=price,
+                timestamp=self._get_timestamp(),
+                recvWindow=60000,  # Increased to 60 second window
             )
             
             logger.info(f"LIMIT order placed successfully: {order}")
@@ -143,12 +167,13 @@ class BasicBot:
             BinanceRequestException: If request fails
         """
         try:
+            self._sync_time()
             logger.info(
                 f"Placing STOP_LIMIT order: {side} {quantity} {symbol} "
                 f"@ {price} (stop: {stop_price})"
             )
             
-            order = self.client.new_order(
+            order = self.client.futures_create_order(
                 symbol=symbol,
                 side=side,
                 type="STOP",
@@ -156,6 +181,8 @@ class BasicBot:
                 quantity=quantity,
                 price=price,
                 stopPrice=stop_price,
+                timestamp=self._get_timestamp(),
+                recvWindow=60000,  # Increased to 60 second window
             )
             
             logger.info(f"STOP_LIMIT order placed successfully: {order}")
@@ -179,8 +206,12 @@ class BasicBot:
             Account information from API
         """
         try:
+            self._sync_time()
             logger.info("Fetching account information")
-            account = self.client.account()
+            account = self.client.futures_account(
+                timestamp=self._get_timestamp(),
+                recvWindow=60000  # Increased to 60 second window
+            )
             logger.info(f"Account info retrieved: {account}")
             return account
         except Exception as e:
