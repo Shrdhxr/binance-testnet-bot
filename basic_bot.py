@@ -116,6 +116,14 @@ class BasicBot:
         try:
             self._sync_time()
             logger.info(f"Placing LIMIT order: {side} {quantity} {symbol} @ {price}")
+
+            ticker = self.client.futures_symbol_ticker(symbol=symbol)
+            current_price = float(ticker['price'])
+
+            if side.upper() == "BUY" and price >= current_price:
+                raise ValueError(f"BUY limit price ({price}) must be LOWER than market price ({current_price})")
+            elif side.upper() == "SELL" and price <= current_price:
+                raise ValueError(f"SELL limit price ({price}) must be HIGHER than market price ({current_price})")
             
             order = self.client.futures_create_order(
                 symbol=symbol,
@@ -172,6 +180,41 @@ class BasicBot:
                 f"Placing STOP_LIMIT order: {side} {quantity} {symbol} "
                 f"@ {price} (stop: {stop_price})"
             )
+
+            ticker = self.client.futures_symbol_ticker(symbol=symbol)
+            current_price = float(ticker["price"])
+
+            # --- Add smart validation based on order side ---
+            if side.upper() == "BUY":
+                if stop_price <= current_price:
+                    suggested_stop = round(current_price * 1.01, 2)
+                    suggested_limit = round(suggested_stop * 1.001, 2)
+                    msg = (
+                        f"BUY STOP_LIMIT order invalid: stop ({stop_price}) must be ABOVE market price ({current_price}). "
+                        f"💡 Try stop={suggested_stop}, limit={suggested_limit}."
+                    )
+                    logger.error(msg)
+                    raise ValueError(msg)
+                if price < stop_price:
+                    msg = f"For BUY STOP_LIMIT, limit price ({price}) should be ≥ stop price ({stop_price})."
+                    logger.error(msg)
+                    raise ValueError(msg)
+
+            elif side.upper() == "SELL":
+                if stop_price >= current_price:
+                    suggested_stop = round(current_price * 0.99, 2)
+                    suggested_limit = round(suggested_stop * 0.999, 2)
+                    msg = (
+                        f"SELL STOP_LIMIT order invalid: stop ({stop_price}) must be BELOW market price ({current_price}). "
+                        f"💡 Try stop={suggested_stop}, limit={suggested_limit}."
+                    )
+                    logger.error(msg)
+                    raise ValueError(msg)
+                if price > stop_price:
+                    msg = f"For SELL STOP_LIMIT, limit price ({price}) should be ≤ stop price ({stop_price})."
+                    logger.error(msg)
+                    raise ValueError(msg)
+
             
             order = self.client.futures_create_order(
                 symbol=symbol,
