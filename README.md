@@ -8,8 +8,8 @@ A production-ready Python trading bot for Binance Futures Testnet that supports 
 - **CLI Interface**: Easy-to-use command-line interface with argparse
 - **Input Validation**: Comprehensive validation for all user inputs
 - **Logging**: Rotating file handler with detailed request/response/error logging
-- **Error Handling**: Graceful error handling with informative messages
-- **Rich Output**: Beautiful terminal output using the Rich library
+- **Error Handling**: Error handling with informative messages
+- **Rich Output**: Terminal output using the Rich library
 - **Environment Management**: Secure API key management with python-dotenv
 - **Testing**: Unit tests for validation logic using pytest
 - **Code Quality**: Formatted with black, linted with flake8, sorted with isort
@@ -56,11 +56,7 @@ pip install -r requirements.txt
 ### 4. Configure API Credentials
 
 1. Get your Binance Futures Testnet API key and secret from: https://testnet.binancefuture.com/
-2. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-3. Edit `.env` and add your credentials:
+2. Create `.env` and add your credentials:
    ```
    API_KEY=your_testnet_api_key
    API_SECRET=your_testnet_api_secret
@@ -70,26 +66,26 @@ pip install -r requirements.txt
 
 ### MARKET Order
 
-Place a market buy order for 0.001 BTC:
+Place a market buy order for 0.001 ETH:
 
 ```bash
-python bot.py --symbol BTCUSDT --side BUY --type MARKET --quantity 0.001
+python bot.py --symbol ETHUSDT --side BUY --type MARKET --quantity 0.001
 ```
 
 ### LIMIT Order
 
-Place a limit sell order for 1 ETH at 2000 USDT:
+Place a limit sell order for 1 ETH at 4200 USDT:
 
 ```bash
-python bot.py --symbol ETHUSDT --side SELL --type LIMIT --quantity 1.0 --price 2000
+python bot.py --symbol ETHUSDT --side SELL --type LIMIT --quantity 1 --price 4200
 ```
 
 ### STOP_LIMIT Order
 
-Place a stop-limit buy order for 1 BNB at 300 USDT with stop at 295:
+Place a stop-limit buy order for 1 ETH at 4100 USDT with stop at 4050:
 
 ```bash
-python bot.py --symbol BNBUSDT --side BUY --type STOP_LIMIT --quantity 1 --price 300 --stop-price 295
+python bot.py --symbol ETHUSDT --side BUY --type STOP_LIMIT --quantity 1 --price 4100 --stop-price 4050
 ```
 
 ### Get Help
@@ -116,22 +112,11 @@ Example log output:
 
 ## Testing
 
-Run the test suite:
+
+Run test cases:
 
 ```bash
-pytest tests/
-```
-
-Run tests with verbose output:
-
-```bash
-pytest tests/ -v
-```
-
-Run tests with coverage:
-
-```bash
-pytest tests/ --cov=.
+python -m pytest -v
 ```
 
 ## Code Quality
