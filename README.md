@@ -16,7 +16,7 @@ A production-ready Python trading bot for Binance Futures Testnet that supports 
 
 ## Project Structure
 
-\`\`\`
+```
 trading_bot/
 ├── bot.py                 # Main CLI entry point
 ├── basic_bot.py          # BasicBot class for API interaction
@@ -29,42 +29,42 @@ trading_bot/
 ├── requirements.txt      # Python dependencies
 ├── .env.example          # Example environment variables
 └── README.md             # This file
-\`\`\`
+```
 
 ## Setup Instructions
 
 ### 1. Clone the Repository
 
-\`\`\`bash
+```bash
 git clone <repository-url>
 cd trading_bot
-\`\`\`
+```
 
 ### 2. Create Virtual Environment
 
-\`\`\`bash
+```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-\`\`\`
+```
 
 ### 3. Install Dependencies
 
-\`\`\`bash
+```bash
 pip install -r requirements.txt
-\`\`\`
+```
 
 ### 4. Configure API Credentials
 
 1. Get your Binance Futures Testnet API key and secret from: https://testnet.binancefuture.com/
 2. Copy `.env.example` to `.env`:
-   \`\`\`bash
+   ```bash
    cp .env.example .env
-   \`\`\`
+   ```
 3. Edit `.env` and add your credentials:
-   \`\`\`
+   ```
    API_KEY=your_testnet_api_key
    API_SECRET=your_testnet_api_secret
-   \`\`\`
+   ```
 
 ## Usage
 
@@ -72,31 +72,31 @@ pip install -r requirements.txt
 
 Place a market buy order for 0.001 BTC:
 
-\`\`\`bash
+```bash
 python bot.py --symbol BTCUSDT --side BUY --type MARKET --quantity 0.001
-\`\`\`
+```
 
 ### LIMIT Order
 
 Place a limit sell order for 1 ETH at 2000 USDT:
 
-\`\`\`bash
+```bash
 python bot.py --symbol ETHUSDT --side SELL --type LIMIT --quantity 1.0 --price 2000
-\`\`\`
+```
 
 ### STOP_LIMIT Order
 
 Place a stop-limit buy order for 1 BNB at 300 USDT with stop at 295:
 
-\`\`\`bash
+```bash
 python bot.py --symbol BNBUSDT --side BUY --type STOP_LIMIT --quantity 1 --price 300 --stop-price 295
-\`\`\`
+```
 
 ### Get Help
 
-\`\`\`bash
+```bash
 python bot.py --help
-\`\`\`
+```
 
 ## Logging
 
@@ -108,57 +108,57 @@ All API requests, responses, and errors are logged to `logs/bot.log`. The log fi
 
 Example log output:
 
-\`\`\`
+```
 2024-01-15 10:30:45,123 - basic_bot - INFO - Binance Futures client initialized successfully
 2024-01-15 10:30:46,456 - basic_bot - INFO - Placing MARKET order: BUY 0.001 BTCUSDT
 2024-01-15 10:30:47,789 - basic_bot - INFO - MARKET order placed successfully: {'orderId': 123456, ...}
-\`\`\`
+```
 
 ## Testing
 
 Run the test suite:
 
-\`\`\`bash
+```bash
 pytest tests/
-\`\`\`
+```
 
 Run tests with verbose output:
 
-\`\`\`bash
+```bash
 pytest tests/ -v
-\`\`\`
+```
 
 Run tests with coverage:
 
-\`\`\`bash
+```bash
 pytest tests/ --cov=.
-\`\`\`
+```
 
 ## Code Quality
 
 ### Format Code with Black
 
-\`\`\`bash
+```bash
 black .
-\`\`\`
+```
 
 ### Lint Code with Flake8
 
-\`\`\`bash
+```bash
 flake8 .
-\`\`\`
+```
 
 ### Sort Imports with isort
 
-\`\`\`bash
+```bash
 isort .
-\`\`\`
+```
 
 ### Run All Quality Checks
 
-\`\`\`bash
+```bash
 black . && flake8 . && isort .
-\`\`\`
+```
 
 ## Environment Variables
 
@@ -220,13 +220,13 @@ The bot handles various error scenarios:
 
 ## Example Log File
 
-\`\`\`
+```
 2024-01-15 10:30:45,123 - __main__ - INFO - Initializing Binance Futures client...
 2024-01-15 10:30:45,456 - basic_bot - INFO - Binance Futures client initialized successfully
 2024-01-15 10:30:46,789 - basic_bot - INFO - Placing MARKET order: BUY 0.001 BTCUSDT
 2024-01-15 10:30:47,012 - basic_bot - INFO - MARKET order placed successfully: {'orderId': 12345678, 'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'MARKET', 'origQty': '0.001', 'price': '0', 'status': 'FILLED', 'time': 1705318247012}
 2024-01-15 10:30:47,345 - __main__ - INFO - Order execution completed: {'orderId': 12345678, ...}
-\`\`\`
+```
 
 ## Troubleshooting
 
